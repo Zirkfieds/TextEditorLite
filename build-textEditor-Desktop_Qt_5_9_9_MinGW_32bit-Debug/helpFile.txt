@@ -1,0 +1,88 @@
+* Introduction:
+
+textEditor is a light notepad-like editor for binary files like .txt, .cpp and such.
+
+Besides from all the basic features like file input and output, it also offers several advanced features including Statistics, Compression and Similarity Analysis.
+
+---------------------------------------
+
+* File Interactions:
+
+The File tab in the menu bar provides all supported interactions with binary files.
+
+Open (Shortcut Ctrl+O): 
+	Opens a file with supported format.
+
+Save (Shortcut Ctrl+S): 
+	Saves the current file.
+
+Save As (Shortcut Ctrl+Alt+S):
+	Saves the current file as another file at the given directory.
+
+Close (Shortcut Ctrl+W):
+	Closes the current file. If file is not saved, the editor will prompt the user to save the changes or discard them.
+
+New (Shortcut Ctrl+N):
+	Closes the current file. If file is not saved, the editor will prompt the user to save the changes or discard them before creating a blank binary file.
+
+The Edit tab in the menu bar also provides two basic text-editing features: Undo and Redo.
+
+Undo (Shortcut Ctrl+Z):
+	Undo the last set of inputs. The editor can hold up to 50 undo actions.
+
+Redo (Shortcut Ctrl+Y):
+	Redo the last set of inputs. The editor can hold up to 50 redo actions.
+
+---------------------------------------
+
+* Find/Replace (Shortcut: Ctrl+F): 
+
+The Edit tab provides two features to locate and replace a given string in the text.
+
+Tutorial:
+	1. Use the shortcut ctrl+F or click the Find/Replace action in the Edit tab of the menu bar
+	2. Input the pattern string and then click Begin.
+	3. Use the Next button to navigate in the original text. The cursor will hop to the closest match. 
+	NOTE: Successive clicks of this button continues to locate all matches until the cursor reaches the end of file.
+	4. If a replacement string is given, the Replace button will be enabled
+	5. The closest pattern string to the cursor will be replaced with the replacement string on clicking the Replace button.
+
+---------------------------------------
+
+* Statistics (Shortcut: Ctrl+Shift+S):
+
+The Tools tab provides a feature to display all basic properties and statistics of a binary file.
+
+By using the shortcut or clicking the Statistics action in the Tools tab of the menu bar, a new window will be displayed on top of the current active window, displaying all basic statistics of the file.
+ 
+---------------------------------------
+
+* Compression (Shortcut: Ctrl+Shift+C):
+
+The Tools tab provides a feature to compress the current file.
+
+By using the shortcut or clicking the Compression action in the Tools tab of the menu bar, a new window will be displayed on top of the current active window, displaying the Compression GUI.
+
+Tutorial:
+	1. The left text editing area will automatically copies the current file's content. This text area can be edited before encoding.
+	2. Click the Encode button to generate the respective huffman codes for the content of the text area.
+	3. Once the compression is finished, the encoded file will be displayed at the text area on the right.
+	4. By clicking the Save HuffmanCodings file, the huffman code as well as the encoded text will be saved at the given directory.
+	5. By clicking the Open HuffmanCodings file, the compression module will load a give .hcf file, displaying the encoded text on the right text area.
+	6. By clicking the Decode button while the right text area is not empty, the compression module will decompress it into the original text on the left text area.
+
+---------------------------------------
+
+* Similarity Analysis (Shortcut: Ctrl+Shift+B):
+
+The Tools tab provides a feature to analyze the similarity between two given binary files.
+
+By using the shortcut or clicking the Similarity action in the Tools tab of the menu bar, a new window will be displayed on top of the current active window, displaying the Similarity Analysis GUI.
+
+Tutorial:
+	1. The left text editing area can be initialized with a binary file or the current active file.
+	2. The right text editing area can ONLY be initialized with a binary file.
+	3. By clicking the Method I or the Method II button, a certain value with 3 digits decimals will be displayed as the result.
+	NOTE: The methods and their respective results are explained in details in the About button.
+
+---------------------------------------

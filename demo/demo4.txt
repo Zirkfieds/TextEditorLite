@@ -1,0 +1,6 @@
+this is a file that will be encoded.
+This is a fiLE that will be ENCODED.
+this is a file that wiLL be encoded.
+this IS A FIle THAT WILL BE encoded.
+This is a file that will be decoded.
+THIS IS A FILE THAT WILL BE ENCODED.

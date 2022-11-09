@@ -1,0 +1,20 @@
+The result of Method 1 (Displayed as Similarity M1 on the equation) is a decimal ranged from 0 to infinite.
+
+The smaller the value, the more similar the two given texts are.
+
+NOTE: The similarity analysis results given by this method are NOT ABSOLUTE.
+For instance, the first pair of texts has a similarity of 0.300, the second pair of texts has a similarity of 0.100.
+this DOES NOT necessarily means the first pair is less similar than the second pair!
+
+If two texts are completely identical, the result will be 0.
+
+
+The result of Method 2 (Displayed as Similarity M2 on the equation) is a decimal ranged from 0 to 1.
+
+The closer the value to 1, the more similar the two given texts are.
+NOTE: The similarity anaysis results given by this method are ABSOLUTE.
+
+If two texts are completely identical, the result will be 1.
+If two texts have a completely different word set from each other, the result will be 0.
+
+It is highly recommended that the user use the second method (Method II).

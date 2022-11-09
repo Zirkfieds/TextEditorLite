@@ -1,0 +1,401 @@
+#include<iostream>
+#include<cstdlib>
+#include<algorithm>
+#include<vector>
+#include<iomanip>
+#include<stack>
+#include<sstream>
+using namespace std;
+
+#define MINIMUM 0xFFFF
+#define NULLCHR '^'
+#define ASCIISPACE 32
+#define ASCIIMAX 127
+#define NOTCONNECTED 0
+
+template<class T>
+class BTreeNode {
+public:
+	T data;
+	int weight;
+	BTreeNode<T>* lchild;
+	BTreeNode<T>* rchild;
+
+	BTreeNode(T elem, int weight) {
+		this->data = elem;
+		this->weight = weight;
+		lchild = rchild = nullptr;
+	}
+};
+
+template<typename T>
+class Btree {
+public:
+	BTreeNode<T>* root;
+	int depth;
+
+	//(A(B(D,E(H(J,K(L,M(^,N))))),C(F,G(^,I))))
+	//A B D ^ ^ E H J ^ ^ K L ^ ^ M ^ N ^ ^ ^ C F ^ ^ G ^ I ^ ^ 
+
+	//A(B(C,D),E(,F(G(,H))))
+	//A B C ^ ^ D ^ ^ E ^ F G ^ H ^ ^ ^ 
+
+	//(A(B, C))
+	// A B ^ ^ C ^ ^ 
+
+	//CASTCASTSATATATASA
+	//111011001110110011001001001001100
+
+	Btree() {
+		root = nullptr;
+		depth = 0;
+	}
+
+	void createTree(string const& tree) {
+		istringstream btreeStr(tree);
+		
+		T elem; btreeStr >> elem;
+		root = new BTreeNode<T>(elem, 0);
+
+		createTreeNode(btreeStr, root->lchild);
+		createTreeNode(btreeStr, root->rchild);
+
+	}
+
+	void createTreeNode(istringstream& btreeStr, BTreeNode<T>*& node) {
+		T elem; btreeStr >> elem;
+		if (elem == NULLCHR) {
+			node = nullptr;
+			return;
+		}
+		else {
+			BTreeNode<T>* newNode = new BTreeNode<T>(elem, 0);
+			node = newNode;
+			createTreeNode(btreeStr, node->lchild);
+			createTreeNode(btreeStr, node->rchild);
+		}
+	}
+
+	void displayTree(BTreeNode<T>* node) {
+		if (!node) {
+			return;
+		}
+		else {
+			cout << node->data;
+
+			if (node->lchild || node->rchild) {
+				cout << '(';
+				displayTree(node->lchild); cout << ',';
+				displayTree(node->rchild); cout << ')';
+			}
+		}
+	}
+
+	void searchNode(BTreeNode<T>* node, T target) {
+		if (!node) {
+			return;
+		}
+		if (node->data == target) {
+			cout << node->data << endl;
+
+			if (node->lchild) {
+				cout << "lchild: " << node->lchild->data << endl;
+			}
+			else cout << "lchild: " << NULLCHR << endl;
+
+			if (node->rchild) {
+				cout << "rchild: " << node->rchild->data << endl;
+			}
+			else cout << "rchild: " << NULLCHR << endl;
+
+			return;
+		}
+		searchNode(node->lchild, target);
+		searchNode(node->rchild, target);
+	}
+
+	void treeDepth(BTreeNode<T>* node, int lastDepth) {
+		if (!node) {
+			return;
+		}
+		int curDepth = lastDepth;
+		this->depth = max(curDepth + 1, this->depth);
+		treeDepth(node->lchild, curDepth + 1);
+		treeDepth(node->rchild, curDepth + 1);
+	}
+
+	void inTravRecur(BTreeNode<T>* node) {
+		if (!node) {
+			return;
+		}
+		else {
+			inTravRecur(node->lchild);
+			cout << node->data;
+			inTravRecur(node->rchild);
+		}
+	}
+
+	void inTrav(BTreeNode<T>* root) {
+		BTreeNode<T>* tmp = root;
+		stack<BTreeNode<T>*> nodes;
+
+		do {
+			if (tmp) {
+				nodes.push(tmp);
+				tmp = tmp->lchild;
+			}
+			else {
+				tmp = nodes.top(); nodes.pop();
+				cout << tmp->data;
+				tmp = tmp->rchild;
+			}
+
+		} while (!nodes.empty() || tmp);
+		
+		while (!nodes.empty()) { nodes.pop(); }
+
+	}
+
+	void deleteTree(BTreeNode<T>*& node) {
+		if (!node) {
+			return;
+		}
+		deleteTree(node->lchild);
+		deleteTree(node->rchild);
+		delete node;
+	}
+		 
+};
+
+bool desc(pair<char, int>, pair<char, int>);
+bool asc(pair<char, int>, pair<char, int>);
+
+class HTreeNode {
+public:
+	int weight;
+	int parent, lchild, rchild;
+
+	HTreeNode() {
+		int weight = 0;
+		parent = lchild = rchild = NOTCONNECTED;
+	}
+
+	HTreeNode(char elem, int weight) {
+		//this->data = elem;
+		this->weight = weight;
+		parent = lchild = rchild = -1;
+	}
+
+};
+
+class huffmanTree {
+public:
+	HTreeNode* root;
+
+	vector<pair<char, int>> charFreq;
+	vector<pair<char, int>>::iterator notZero;
+	
+	vector<string> huffmanCode;
+
+	int leafCnt = 0, nodeCnt = 0;
+
+	string str, codedStr, decodedStr;
+
+	huffmanTree(string& str) {
+		cout << endl << str << endl;
+		this->str = str;
+		root = nullptr;
+		for (int i = 0; i < ASCIIMAX - ASCIISPACE; i++) {
+			pair<char, int> p;
+			p.first = char(i + ASCIISPACE);
+			p.second = 0;
+			charFreq.push_back(p);
+		}
+		getCharFreq();
+	}
+
+	void getCharFreq() {
+
+		for (auto& c : str) {
+			if (c >= ASCIISPACE && c <= ASCIIMAX) charFreq[c - ASCIISPACE].second++;
+		}
+
+		sort(charFreq.begin(), charFreq.end(), desc);
+
+		int w = 1;
+		for (auto p = charFreq.begin(); p != charFreq.end(); p++) {
+			if (p->second == 0) {
+				break;
+			}
+			//p->second = w++;
+			leafCnt++;
+		}
+		nodeCnt = leafCnt * 2 - 1;
+
+		root = new HTreeNode[nodeCnt + 1];
+		auto* tmp = root;
+		int i = 0;
+		root[0].weight = 0;
+
+		tmp++;
+		for (i = 1; i <= leafCnt; i++, tmp++) {
+			tmp->weight = charFreq[i - 1].second;
+			tmp->lchild = tmp->rchild = tmp->parent = NOTCONNECTED;
+		}
+		for (; i <= nodeCnt; i++, tmp++) {
+			tmp->weight = 0;
+			tmp->lchild = tmp->rchild = tmp->parent = NOTCONNECTED;
+		}
+	}
+
+	pair<int, int> getMinimumWeightPair(int n) {
+		int min, secmin;
+		secmin = min = MINIMUM;
+		int minIndex = 1, secminIndex = 1;
+		for (int i = 1; i <= n; i++) {
+			if (root[i].weight < min && root[i].parent == NOTCONNECTED) {
+				min = root[i].weight;
+				minIndex = i;
+			}
+		}
+		for (int i = 1; i <= n; i++) {
+			if ((root[i].weight < secmin) && (i != minIndex) && root[i].parent == NOTCONNECTED) {
+				secmin = root[i].weight;
+				secminIndex = i;
+			}
+		}
+		return make_pair(minIndex, secminIndex);
+	}
+	
+	void displayHTree() {
+		for (int i = 1; i <= nodeCnt; i++) {
+			if (i <= leafCnt) {
+				cout << charFreq[i - 1].first << ends << root[i].weight << ends << root[i].parent <<
+					ends << root[i].lchild << ends << root[i].rchild << endl;
+			}
+			else {
+				cout << i - leafCnt << ends << root[i].weight << ends << root[i].parent <<
+					ends << root[i].lchild << ends << root[i].rchild << endl;
+			}
+		}
+	}
+
+	void displayHCode() {
+		cout << "Key\tWeight\tCode\t" << endl;
+		for (int i = 1; i <= leafCnt; i++) {
+			cout << charFreq[i - 1].first << '\t' << root[i].weight << '\t' << huffmanCode[i - 1] << endl;
+		}
+	}
+	
+	void createHTree() {
+		for (int i = leafCnt + 1; i <= nodeCnt; i++)
+		{
+			int s1, s2;
+			auto minPair = getMinimumWeightPair(i - 1);
+			s1 = minPair.first; //min
+			s2 = minPair.second; //secmin
+			root[s1].parent = i;
+			root[s2].parent = i;
+			root[i].lchild = s1;
+			root[i].rchild = s2;
+			root[i].weight = root[s1].weight + root[s2].weight;
+		}
+	}
+#if 1
+	void hEncode() {
+		for (int i = 1; i <= leafCnt; i++) {
+			string hCodeStr = "";
+			stack<char> ctmp;
+			for (int cur = i, par = root[cur].parent; 
+				par != 0; 
+				cur = par, par = root[par].parent) {
+				if (root[par].lchild == cur) {
+					ctmp.push('0');
+				}
+				else {
+					ctmp.push('1');
+				}
+			}
+			while (!ctmp.empty()) { hCodeStr += ctmp.top(); ctmp.pop(); }
+			huffmanCode.push_back(hCodeStr);
+		}
+		for (auto& c : str) {
+			for (int i = 0; i < leafCnt; i++) {
+				if (c == charFreq[i].first) {
+					codedStr += huffmanCode[i];
+					continue;
+				}
+			}
+		}
+		cout << codedStr << endl;
+	}
+#endif;
+
+	void hDecode(string& codedStr) {
+		int i = 0, j = 0;
+		decodedStr.clear();
+		while (j < codedStr.length()) {
+			i = 2 * leafCnt - 1;
+			while (root[i].lchild != NOTCONNECTED && root[i].rchild != NOTCONNECTED) {
+				if (codedStr[j] == '0') {
+					i = root[i].lchild;
+				}
+				else if (codedStr[j] == '1') {
+					i = root[i].rchild;
+				}
+				j++;
+			}
+			//cout << "FIRST: " << charFreq[i - 1].first << endl;
+			decodedStr += charFreq[i - 1].first;
+		}
+		cout << decodedStr << endl;
+	}
+
+	string getCodedStr() { return codedStr; }
+};
+
+bool desc(pair<char, int> p1, pair<char, int> p2) {
+	if (p1.second == p2.second) {
+		return p1.first > p2.first;
+	}
+	else {
+		return p1.second > p2.second;
+	}
+}
+bool asc(pair<char, int> p1, pair<char, int> p2) {
+	return p1.second < p2.second;
+}
+
+int main() {
+
+	Btree<char> t;
+
+	//t.createTree("A B ^ ^ C ^ ^ ");
+	t.createTree("A B D ^ ^ E H J ^ ^ K L ^ ^ M ^ N ^ ^ ^ C F ^ ^ G ^ I ^ ^ ");
+	//t.createTree("A B C ^ ^ D ^ ^ E ^ F G ^ H ^ ^ ^ ");
+
+	t.displayTree(t.root); cout << endl;
+
+	t.inTrav(t.root); cout << endl;
+	t.inTravRecur(t.root); cout << endl;
+
+	t.searchNode(t.root, 'H');
+	t.searchNode(t.root, 'E');
+
+	t.treeDepth(t.root, t.depth);
+	cout << "Depth: "<< t.depth << endl;
+
+	t.deleteTree(t.root);
+
+	string s = "rainbow sanctuary";
+
+	huffmanTree h(s);
+	h.createHTree();
+	h.hEncode();
+
+	//h.displayHTree();
+	h.displayHCode();
+
+	h.hDecode(h.getCodedStr());
+
+}

@@ -1,0 +1,389 @@
+#include<iostream>
+#include<cstdlib>
+#include<algorithm>
+#include<vector>
+#include<string>
+#include<sstream>
+
+using namespace std;
+
+#define DEFAULTFREQ 0
+
+enum BSTreeBalanceFactorList {
+	LEFT = -1, EQL, RIGHT
+};
+
+typedef class stringKey {
+public:
+	string str;
+
+	stringKey() {
+		str = "";
+		return;
+	}
+
+	stringKey(string& s) {
+		str = s;
+		return;
+	}
+
+	bool operator==(stringKey const& r) {
+		return this->str.compare(r.str) == 0 ? true : false;
+	}
+
+	bool operator>(stringKey const& r) {
+		return this->str > r.str;
+	}
+
+	bool operator<(stringKey const& r) {
+		return this->str < r.str;
+	}
+
+} skey;
+
+class BSTNode {
+public:
+	skey data;
+	int freq;
+
+	BSTNode* lc, * rc;
+
+	BSTNode(string& s, int c) {
+		data.str = s;
+		freq = c;
+		lc = rc = nullptr;
+		return;
+	}
+
+	BSTNode(skey const& k) {
+		data = k;
+		freq = DEFAULTFREQ;
+		lc = rc = nullptr;
+		return;
+	}
+
+	BSTNode(skey& k) {
+		data = k;
+		freq = DEFAULTFREQ;
+		lc = rc = nullptr;
+		return;
+	}
+	
+	BSTNode() {
+		data.str = "";
+		freq = DEFAULTFREQ;
+		lc = rc = nullptr;
+		return;
+	}
+};
+  
+class BSTree {
+private:
+	BSTNode* root;
+
+	void rotateLL(BSTNode*& root) { // LL
+		if (root) {
+			BSTNode* tmp = root->lc;
+			root->lc = tmp->rc;
+			tmp->rc = root;
+			root = tmp;
+		}
+		return;
+	}
+
+	void rotateRR(BSTNode*& root) { // RR
+		if (root) {
+			BSTNode* tmp = root->rc;
+			root->rc = tmp->lc;
+			tmp->lc = root;
+			root = tmp;
+		}
+		return;
+	}
+
+	void rotateRL(BSTNode*& root) { // RL
+		rotateLL(root->rc);
+		rotateRR(root);
+		return;
+	}
+
+	void rotateLR(BSTNode*& root) { //LR
+		rotateRR(root->lc);
+		rotateLL(root);
+		return;
+	}
+
+public:
+
+	BSTree() {
+		root = nullptr;
+		return;
+	}
+	
+	BSTNode* locateNode(skey const& key) {
+		BSTNode* tmp = this->root;
+		while (tmp) {
+			if (tmp->data == key) {
+				return tmp;
+			}
+			else if (tmp->data > key) {
+				tmp = tmp->lc;
+			}
+			else if (tmp->data < key) {
+				tmp = tmp->rc;
+			}
+		}
+		cerr << "NODE NOT FOUND" << endl;
+		return nullptr;
+	}
+	 
+	void insert(skey const& key, bool incre = false) {
+		insertNode(root, key, incre);
+	}
+
+	void insertNode(BSTNode*& root, skey const& key, bool incre = false) {
+		if (!root) {
+			root = new BSTNode(key);
+		}
+		else {
+			if (root->data > key) {
+				insertNode(root->lc, key, incre);
+				int lh = getHeight(root->lc); int rh = getHeight(root->rc);
+				if (lh - rh > 1) {
+					if (root->lc->data > key) {
+						rotateLL(root);
+					}
+					else {
+						rotateLR(root);
+					}
+				}
+			}
+			else if (root->data < key) {
+				insertNode(root->rc, key, incre);
+				int lh = getHeight(root->lc); int rh = getHeight(root->rc);
+				if (rh - lh > 1) {
+					if (root->rc->data < key) {
+						rotateRR(root);
+					}
+					else {
+						rotateRL(root);
+					}
+				}
+			}
+			else if (root->data == key) {
+				if (incre) {
+					root->freq++;
+				}
+				return;
+			}
+			else {
+				return;
+			}
+		}
+
+	}
+
+	void trav(BSTNode* root) {
+#if 0
+		if (root) {
+			inTrav(root->lc);
+			cout << root->data.str << ": " << root->data.cnt << endl;
+			inTrav(root->rc);
+		}
+		return;
+#endif;
+#if 1
+		if (!root) {
+			return;
+		}
+		else {
+			cout << root->data.str << ": " << root->freq << ends;
+
+			if (root->lc || root->rc) {
+				cout << '(';
+				trav(root->lc); cout << ',';
+				trav(root->rc); cout << ')';
+			}
+		}
+#endif;
+	}
+
+	void travFromRoot() {
+		trav(this->root);
+		cout << endl;
+	}
+
+	void travTrackFreq(BSTNode* root, vector<double>& freqVectors) {
+		if (!root) {
+			return;
+		}
+		else {
+			freqVectors.push_back(double(root->freq));
+			if (root->lc || root->rc) {
+				travTrackFreq(root->lc, freqVectors);
+				travTrackFreq(root->rc, freqVectors);
+			}
+		}
+	}
+
+	void travTrackFreqFromRoot(vector<double>& freqVectors) {
+		travTrackFreq(this->root, freqVectors);
+	}
+
+	int getHeight(BSTNode* node) {;
+		if (node) {
+			int lh = getHeight(node->lc); int rh = getHeight(node->rc);
+			return lh > rh ? ++lh : ++rh;
+		}
+		else {
+			return 0;
+		}
+	}
+
+};
+
+class similarity {
+private:
+
+	BSTree srcContent, strContent;
+
+	string src, str;
+	vector<string> srcSliced, strSliced;
+
+	string full;
+	vector<string> fullSliced;
+
+	vector<double> srcVectors, strVectors;
+
+	double similarityPct;
+	
+public:
+
+	enum similarityAnalysisMethodList {
+		NONE = 0, DISTANCE, COSINE
+	};
+
+	similarity(string& src, string& str) {
+		this->src = src, this->str = str;
+		full.append(src + ' ' + str);
+		similarityPct = 0.0;
+	}
+
+	void sliceStrings() {
+		
+		istringstream issrc(src);
+		while (!issrc.eof()) {
+			string s; issrc >> s;
+			srcSliced.push_back(s);
+		}
+
+		istringstream isstr(str);
+		while (!isstr.eof()) {
+			string s; isstr >> s;
+			strSliced.push_back(s);
+		}
+
+		istringstream isfull(full);
+		while (!isfull.eof()) {
+			string s; isfull >> s;
+			fullSliced.push_back(s);
+		}
+
+		for (auto s : fullSliced) {
+			stringKey elem(s);
+			srcContent.insert(elem, false);
+			strContent.insert(elem, false);
+
+		}
+		return;
+
+	}
+
+	void countWordFreq() {
+
+		for (auto s : srcSliced) {
+			stringKey elem(s);
+			srcContent.insert(elem, true);
+		}
+
+		srcContent.travFromRoot();
+
+		for (auto s : strSliced) {
+			stringKey elem(s);
+			strContent.insert(elem, true);
+		}
+
+		strContent.travFromRoot();
+		
+		return;
+
+	}
+
+	void getSimilarity(int method) {
+
+		srcContent.travTrackFreqFromRoot(this->srcVectors);
+		strContent.travTrackFreqFromRoot(this->strVectors);
+
+		if (method == DISTANCE) {
+
+			cout << "RELATIVE DISTANCE METHOD: ";
+			double modDiff, modSrcPow, modStrPow;
+
+			int wordCnt = (srcVectors.size() == strVectors.size()) ? (srcVectors.size()) : max(srcVectors.size(), strVectors.size());
+
+			modDiff = modSrcPow = modStrPow = 0.0;
+			for (int i = 0; i < wordCnt; i++) {
+				modDiff += (srcVectors[i] - strVectors[i]) * (srcVectors[i] - strVectors[i]);
+				modSrcPow += (srcVectors[i]) * (srcVectors[i]);
+				modStrPow += (strVectors[i]) * (strVectors[i]);
+			}
+
+			this->similarityPct = sqrt(modDiff) / sqrt((modSrcPow) * (modStrPow));
+
+			cout << this->similarityPct << endl;
+			return;
+		}
+		else if (method == COSINE) {
+
+			cout << "COSINE-VECTOR METHOD: ";
+			double multVect, modSrcPow, modStrPow;
+
+			double wordCnt = (srcVectors.size() == strVectors.size()) ? (srcVectors.size()) : max(srcVectors.size(), strVectors.size());
+
+			multVect = modSrcPow = modStrPow = 0.0;
+
+			for (int i = 0; i < wordCnt; i++) {
+				multVect += (srcVectors[i] * strVectors[i]);
+				modSrcPow += (srcVectors[i]) * (srcVectors[i]);
+				modStrPow += (strVectors[i]) * (strVectors[i]);
+			}
+
+			this->similarityPct = multVect / (sqrt(modSrcPow) * sqrt(modStrPow));
+
+			cout << this->similarityPct << endl;
+			return;
+		}
+	}
+};
+
+
+
+int main() {
+
+	//string src = "hello world apple tests hello";
+	//string str = "hello world apple tests hello";	
+	//
+	//string src = "hello world apple tests hello";
+	//string str = "ballon high low key vector";
+
+	string src = "HELLO WORLD";
+	string str = "HELLO";
+
+	similarity s(src, str);
+	s.sliceStrings();
+	s.countWordFreq();
+	s.getSimilarity(1);
+	s.getSimilarity(2);
+
+
+}

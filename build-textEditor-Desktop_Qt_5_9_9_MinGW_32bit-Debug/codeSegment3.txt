@@ -1,0 +1,15 @@
+void BSTree::rotateRR(BSTNode*& root) {
+    if (root) {
+        BSTNode* tmp = root->rc;
+        root->rc = tmp->lc;
+        tmp->lc = root;
+        root = tmp;
+    }
+    return;
+}
+
+void BSTree::rotateRL(BSTNode*& root) {
+    rotateLL(root->rc);
+    rotateRR(root);
+    return;
+}

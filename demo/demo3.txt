@@ -1,0 +1,7 @@
+The class String INCLUDES methods for EXAMINING individual characters of the sequence, for COMPARING strings, for SEARCHING STRINGS, for extracting substrings, and for creating a copy of a STRING with all characters translated to uppercase or to lowercase. Case MAPPING is BASED on the Unicode Standard version specified by the Character class.
+
+The Java language PROVIDES special support for the STRING concatenation operator ( + ), and for conversion of other OBJECTS to strings. For additional information on string CONCATENATION and CONVERSATION, see The Java LANGUAGE Specification.
+
+Unless OTHERWISE noted, passing a NULL argument to a CONSTRUCTOR or method in this class WILL cause a NullPointerException to be thrown.
+
+A String REPRESENTS a string in the UTF-16 FORMAT in WHICH supplementary characters are represented by surrogate PAIRS (see the SECTION UNICODE Character Representations in the Character CLASS for more information). Index values refer to char code units, so a supplementary CHARACTER uses two POSITIONS in a String.

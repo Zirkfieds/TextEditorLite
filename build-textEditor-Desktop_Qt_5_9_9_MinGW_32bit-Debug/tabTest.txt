@@ -1,0 +1,75 @@
+import java.awt.*;
+import java.util.Stack;
+import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import javax.swing.JOptionPane;
+
+import java.util.LinkedList;
+
+public class historyFrame extends JFrame {
+
+    private final int maxEntries = 10;
+    boolean displayedWarning;
+
+    private LinkedList<String> histories = new LinkedList<String>();
+    private String latestEntry;
+
+    private JPanel contentPane = new JPanel();
+    private JTextArea entriesArea = new JTextArea("", 15, 32);
+    private JScrollPane entriesScrollPane = new JScrollPane(entriesArea);
+
+    public historyFrame(String s) {
+        super(s);
+        final int dSize = 400;
+        this.setSize(dSize, dSize);
+        int windowWidth = dSize;
+        int windowHeight = dSize;
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        int screenWidth = screenSize.width;
+        int screenHeight = screenSize.height;
+        this.setLocation(screenWidth / 2 - windowWidth / 2 + dSize, screenHeight / 2 - windowHeight / 2);
+
+        this.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+
+        displayedWarning = false;
+
+        contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+
+        entriesArea.setLineWrap(true);
+        entriesArea.setForeground(Color.BLACK);
+        entriesArea.setFont(new Font("Consolas", Font.PLAIN, 18));
+        entriesArea.setEditable(false);
+
+        Dimension pSize = entriesArea.getPreferredSize();
+        entriesScrollPane.setBounds(110, 90, pSize.width, pSize.height);
+
+        contentPane.add(entriesScrollPane);
+
+        setContentPane(contentPane);
+
+    }
+
+    void addEntry(String s) {
+        if (histories.size() + 1 == maxEntries) {
+            if (!displayedWarning) {
+                JOptionPane.showMessageDialog(null, "Auto-deleting the oldest entries due to full history stack!",
+                        "Warning!", JOptionPane.WARNING_MESSAGE);
+                displayedWarning = true;
+            }
+            histories.removeFirst();
+        }
+        histories.add(s);
+    }
+
+    public void displayEntries() {
+        entriesArea.setText("");
+        StringBuilder s = new StringBuilder();
+        int size = histories.size();
+        for (int i = 0; i < size; i++) {
+            s.append(histories.get(i) + "\n");
+        }
+        entriesArea.append(s.toString());
+        return;
+    }
+
+}

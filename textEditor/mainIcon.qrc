@@ -1,0 +1,10 @@
+<RCC>
+    <qresource prefix="/resources/icon">
+        <file>main.ico</file>
+        <file>compress.ico</file>
+        <file>find.ico</file>
+        <file>sim.ico</file>
+        <file>stats.ico</file>
+        <file>help.ico</file>
+    </qresource>
+</RCC>

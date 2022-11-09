@@ -1,0 +1,1 @@
+this is a relatively long string, which is used in testing the similarity analysis feature.

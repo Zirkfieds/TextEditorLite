@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/help">
+        <file>simM1.png</file>
+        <file>simM2.png</file>
+    </qresource>
+</RCC>

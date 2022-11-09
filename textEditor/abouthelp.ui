@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>aboutHelp</class>
+ <widget class="QWidget" name="aboutHelp">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>640</width>
+    <height>480</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Help</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="mainIcon.qrc">
+    <normaloff>:/resources/icon/help.ico</normaloff>:/resources/icon/help.ico</iconset>
+  </property>
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="0" column="0">
+    <layout class="QVBoxLayout" name="verticalLayout">
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout">
+       <item>
+        <widget class="QLabel" name="helpTitle">
+         <property name="font">
+          <font>
+           <family>Consolas</family>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>Help Menu of textEditor</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="helpEntries">
+         <property name="font">
+          <font>
+           <family>Consolas</family>
+           <pointsize>9</pointsize>
+          </font>
+         </property>
+         <property name="currentText">
+          <string>Introduction</string>
+         </property>
+         <item>
+          <property name="text">
+           <string>Introduction</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>File Interactions</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Find/Repalce</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Statistics</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Compression</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Similarity</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <widget class="QTextEdit" name="helpContentArea">
+       <property name="font">
+        <font>
+         <family>Consolas</family>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
+       <property name="lineWrapMode">
+        <enum>QTextEdit::WidgetWidth</enum>
+       </property>
+       <property name="readOnly">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <resources>
+  <include location="mainIcon.qrc"/>
+ </resources>
+ <connections/>
+</ui>
